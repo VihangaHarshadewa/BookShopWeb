@@ -1,5 +1,8 @@
 # Chapter One — Premium Bookshop
 
+<img src="https://github.com/user-attachments/assets/548ee4b5-8d90-44b4-97e6-e48503e91f09" width="45%" />
+<img src="https://github.com/user-attachments/assets/95eb3ff2-31ac-4475-ac26-4ed4ee63f3a1" width="45%" />
+
 A full-stack Flask + PostgreSQL bookshop with the warm brown/gold design you provided, admin panel, and full CURL API documentation.
 
 ## Features
