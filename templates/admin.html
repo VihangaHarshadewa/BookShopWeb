@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Chapter One</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='book.png') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2c1810;
+            --secondary: #8b6914;
+            --accent: #d4a574;
+            --bg: #faf8f5;
+            --card-bg: #ffffff;
+            --text: #1a1a1a;
+            --text-light: #666;
+            --text-muted: #999;
+            --border: #e5e5e5;
+            --success: #22c55e;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --shadow-lg: 0 12px 40px rgba(0,0,0,0.12);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Playfair Display', serif; }
+
+        /* Sidebar */
+        .admin-layout {
+            display: grid;
+            min-height: 100vh;
+        }
+        .sidebar {
+            background: var(--primary);
+            color: white;
+            padding: 2rem 1.5rem;
+            position: fixed;
+            width: 260px;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        .sidebar-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .sidebar-logo i { color: var(--accent); }
+        .nav-section {
+            margin-bottom: 1.5rem;
+        }
+        .nav-section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 0.75rem;
+            padding-left: 0.75rem;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            font-size: 0.95rem;
+            margin-bottom: 0.25rem;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        .nav-item i { width: 20px; text-align: center; }
+        .sidebar-footer {
+            position: absolute;
+            bottom: 2rem;
+            left: 1.5rem;
+            right: 1.5rem;
+        }
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 10px;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            padding: 2rem;
+        }
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        .page-header h1 {
+            font-size: 2rem;
+            color: var(--primary);
+        }
+        .header-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        .btn-primary:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        .btn-secondary {
+            background: white;
+            color: var(--text);
+            border: 2px solid var(--border);
+        }
+        .btn-secondary:hover {
+            border-color: var(--secondary);
+            color: var(--secondary);
+        }
+        .btn-danger {
+            background: var(--error);
+            color: white;
+        }
+        .btn-sm { padding: 0.5rem 1rem; font-size: 0.85rem; }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+        }
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+        .stat-icon.books { background: rgba(139, 105, 20, 0.1); color: var(--secondary); }
+        .stat-icon.orders { background: rgba(34, 197, 94, 0.1); color: var(--success); }
+        .stat-icon.revenue { background: rgba(212, 165, 116, 0.2); color: var(--accent); }
+        .stat-icon.stock { background: rgba(239, 68, 68, 0.1); color: var(--error); }
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        /* Content Cards */
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 1.5rem;
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .card-header h2 {
+            font-size: 1.3rem;
+            color: var(--primary);
+        }
+
+        /* Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .data-table th {
+            text-align: left;
+            padding: 0.75rem;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            font-weight: 600;
+            border-bottom: 2px solid var(--border);
+        }
+        .data-table td {
+            padding: 0.875rem 0.75rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+            vertical-align: middle;
+        }
+        .data-table tr:hover td {
+            background: rgba(139, 105, 20, 0.02);
+        }
+        .book-thumb {
+            width: 40px;
+            height: 55px;
+            object-fit: cover;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .badge {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .badge-featured {
+            background: rgba(139, 105, 20, 0.1);
+            color: var(--secondary);
+        }
+        .badge-stock {
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--success);
+        }
+        .badge-low {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+        }
+        .actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        .action-btn.edit {
+            background: rgba(139, 105, 20, 0.1);
+            color: var(--secondary);
+        }
+        .action-btn.edit:hover { background: var(--secondary); color: white; }
+        .action-btn.delete {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+        }
+        .action-btn.delete:hover { background: var(--error); color: white; }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .modal h2 {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(139, 105, 20, 0.1);
+        }
+        .form-group textarea { resize: vertical; min-height: 80px; }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .checkbox-group input { width: auto; }
+        .modal-footer {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .toast {
+            background: var(--card-bg);
+            border-left: 4px solid var(--secondary);
+            padding: 1rem 1.25rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-width: 280px;
+            animation: toastSlide 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .toast.success { border-left-color: var(--success); }
+        .toast.error { border-left-color: var(--error); }
+        @keyframes toastSlide {
+            from { transform: translateX(120%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+        .tab {
+            padding: 0.6rem 1.25rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            transition: all 0.3s;
+            border: none;
+            background: none;
+        }
+        .tab:hover { color: var(--secondary); background: rgba(139, 105, 20, 0.05); }
+        .tab.active { color: var(--secondary); background: rgba(139, 105, 20, 0.1); }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+        .empty-state i { font-size: 3rem; margin-bottom: 1rem; display: block; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .admin-layout { grid-template-columns: 1fr; }
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .form-row { grid-template-columns: 1fr; }
+            .data-table { font-size: 0.85rem; }
+            .data-table th, .data-table td { padding: 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="toast-container" id="toastContainer"></div>
+
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <i class="fas fa-book-open"></i>
+                Chapter One
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="#" class="nav-item active" onclick="showTab('dashboard'); return false;">
+                    <i class="fas fa-chart-pie"></i> Dashboard
+                </a>
+                <a href="#" class="nav-item" onclick="showTab('books'); return false;">
+                    <i class="fas fa-book"></i> Books
+                </a>
+                <a href="#" class="nav-item" onclick="showTab('orders'); return false;">
+                    <i class="fas fa-shopping-cart"></i> Orders
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Tools</div>
+                <a href="/" class="nav-item" target="_blank">
+                    <i class="fas fa-external-link-alt"></i> View Shop
+                </a>
+            </div>
+            <div class="sidebar-footer">
+                <a href="/admin/logout" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Tab -->
+            <div id="tab-dashboard">
+                <div class="page-header">
+                    <h1>Dashboard</h1>
+                </div>
+                <div class="stats-grid" id="statsGrid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon books"><i class="fas fa-book"></i></div>
+                        </div>
+                        <div class="stat-value" id="statBooks">-</div>
+                        <div class="stat-label">Total Books</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon orders"><i class="fas fa-shopping-bag"></i></div>
+                        </div>
+                        <div class="stat-value" id="statOrders">-</div>
+                        <div class="stat-label">Total Orders</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon revenue"><i class="fas fa-dollar-sign"></i></div>
+                        </div>
+                        <div class="stat-value" id="statRevenue">-</div>
+                        <div class="stat-label">Total Revenue</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon stock"><i class="fas fa-exclamation-triangle"></i></div>
+                        </div>
+                        <div class="stat-value" id="statLowStock">-</div>
+                        <div class="stat-label">Low Stock Items</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Recent Orders</h2>
+                    </div>
+                    <div id="recentOrders">
+                        <div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Books Tab -->
+            <div id="tab-books" style="display:none;">
+                <div class="page-header">
+                    <h1>Books</h1>
+                    <div class="header-actions">
+                        <button class="btn btn-primary" onclick="openBookModal()">
+                            <i class="fas fa-plus"></i> Add Book
+                        </button>
+                    </div>
+                </div>
+                <div class="card">
+                    <table class="data-table" id="booksTable">
+                        <thead>
+                            <tr>
+                                <th>Book</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Stock</th>
+                                <th>Rating</th>
+                                <th>Featured</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="booksTableBody">
+                            <tr><td colspan="7" class="empty-state"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Orders Tab -->
+            <div id="tab-orders" style="display:none;">
+                <div class="page-header">
+                    <h1>Orders</h1>
+                </div>
+                <div class="card">
+                    <table class="data-table" id="ordersTable">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Items</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordersTableBody">
+                            <tr><td colspan="6" class="empty-state"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Book Modal -->
+    <div class="modal-overlay" id="bookModal">
+        <div class="modal">
+            <h2 id="modalTitle">Add Book</h2>
+            <form id="bookForm" onsubmit="saveBook(event)">
+                <input type="hidden" id="bookId">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="bookTitle" required>
+                </div>
+                <div class="form-group">
+                    <label>Author</label>
+                    <input type="text" id="bookAuthor" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Price ($)</label>
+                        <input type="number" id="bookPrice" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Stock</label>
+                        <input type="number" id="bookStock" min="0" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="bookCategory" required>
+                            <option value="fiction">Fiction</option>
+                            <option value="non-fiction">Non-Fiction</option>
+                            <option value="classic">Classic</option>
+                            <option value="design">Design</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Rating (0-5)</label>
+                        <input type="number" id="bookRating" step="0.1" min="0" max="5" value="5">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Image URL</label>
+                    <input type="url" id="bookImage" placeholder="https://images.unsplash.com/...">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="bookDescription"></textarea>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="bookFeatured">
+                    <label for="bookFeatured">Featured on homepage</label>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeBookModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Book</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentBooks = [];
+        let currentOrders = [];
+
+        // Toast
+        function showToast(msg, type='success') {
+            const c = document.getElementById('toastContainer');
+            const t = document.createElement('div');
+            t.className = `toast ${type}`;
+            const icon = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
+            t.innerHTML = `<i class="fas ${icon}"></i> ${msg}`;
+            c.appendChild(t);
+            setTimeout(() => t.remove(), 3000);
+        }
+
+        // Tab Navigation
+        function showTab(tab) {
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            event.target.closest('.nav-item').classList.add('active');
+
+            ['dashboard', 'books', 'orders'].forEach(t => {
+                document.getElementById(`tab-${t}`).style.display = t === tab ? 'block' : 'none';
+            });
+
+            if (tab === 'dashboard') loadDashboard();
+            if (tab === 'books') loadBooks();
+            if (tab === 'orders') loadOrders();
+        }
+
+        // Dashboard
+        async function loadDashboard() {
+            try {
+                const res = await fetch('/api/admin/dashboard-stats');
+                const data = await res.json();
+                document.getElementById('statBooks').textContent = data.total_books;
+                document.getElementById('statOrders').textContent = data.total_orders;
+                document.getElementById('statRevenue').textContent = '$' + data.total_revenue.toFixed(2);
+                document.getElementById('statLowStock').textContent = data.low_stock;
+
+                const ro = document.getElementById('recentOrders');
+                if (data.recent_orders.length === 0) {
+                    ro.innerHTML = '<div class="empty-state"><i class="fas fa-box-open"></i><p>No orders yet</p></div>';
+                } else {
+                    ro.innerHTML = '<table class="data-table"><thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Date</th></tr></thead><tbody>' +
+                        data.recent_orders.map(o => `<tr><td>#${o.id}</td><td>${o.customer_name || 'Guest'}</td><td>$${o.total_amount.toFixed(2)}</td><td>${new Date(o.created_at).toLocaleDateString()}</td></tr>`).join('') +
+                        '</tbody></table>';
+                }
+            } catch (err) {
+                showToast('Failed to load dashboard', 'error');
+            }
+        }
+
+        // Books
+        async function loadBooks() {
+            try {
+                const res = await fetch('/api/admin/books');
+                currentBooks = await res.json();
+                renderBooksTable();
+            } catch (err) {
+                showToast('Failed to load books', 'error');
+            }
+        }
+
+        function renderBooksTable() {
+            const tbody = document.getElementById('booksTableBody');
+            if (currentBooks.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><i class="fas fa-book-open"></i><p>No books found</p></td></tr>';
+                return;
+            }
+            tbody.innerHTML = currentBooks.map(b => `
+                <tr>
+                    <td>
+                        <div style="display:flex;align-items:center;gap:0.75rem;">
+                            <img src="${b.image_url || 'https://via.placeholder.com/40x55'}" class="book-thumb" alt="${b.title}">
+                            <div>
+                                <div style="font-weight:600;">${b.title}</div>
+                                <div style="font-size:0.8rem;color:var(--text-light);">${b.author}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td><span class="badge badge-featured">${b.category}</span></td>
+                    <td>$${b.price.toFixed(2)}</td>
+                    <td><span class="badge ${b.stock < 5 ? 'badge-low' : 'badge-stock'}">${b.stock}</span></td>
+                    <td><i class="fas fa-star" style="color:var(--accent);"></i> ${b.rating}</td>
+                    <td>${b.featured ? '<i class="fas fa-check" style="color:var(--success);"></i>' : '-'}</td>
+                    <td>
+                        <div class="actions">
+                            <button class="action-btn edit" onclick="editBook(${b.id})" title="Edit"><i class="fas fa-pen"></i></button>
+                            <button class="action-btn delete" onclick="deleteBook(${b.id})" title="Delete"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Book Modal
+        function openBookModal(book = null) {
+            document.getElementById('modalTitle').textContent = book ? 'Edit Book' : 'Add Book';
+            document.getElementById('bookId').value = book ? book.id : '';
+            document.getElementById('bookTitle').value = book ? book.title : '';
+            document.getElementById('bookAuthor').value = book ? book.author : '';
+            document.getElementById('bookPrice').value = book ? book.price : '';
+            document.getElementById('bookStock').value = book ? book.stock : 10;
+            document.getElementById('bookCategory').value = book ? book.category : 'fiction';
+            document.getElementById('bookRating').value = book ? book.rating : 5;
+            document.getElementById('bookImage').value = book ? (book.image_url || '') : '';
+            document.getElementById('bookDescription').value = book ? (book.description || '') : '';
+            document.getElementById('bookFeatured').checked = book ? book.featured : false;
+            document.getElementById('bookModal').classList.add('active');
+        }
+
+        function closeBookModal() {
+            document.getElementById('bookModal').classList.remove('active');
+            document.getElementById('bookForm').reset();
+        }
+
+        function editBook(id) {
+            const book = currentBooks.find(b => b.id === id);
+            if (book) openBookModal(book);
+        }
+
+        async function saveBook(e) {
+            e.preventDefault();
+            const id = document.getElementById('bookId').value;
+            const data = {
+                title: document.getElementById('bookTitle').value,
+                author: document.getElementById('bookAuthor').value,
+                price: parseFloat(document.getElementById('bookPrice').value),
+                stock: parseInt(document.getElementById('bookStock').value),
+                category: document.getElementById('bookCategory').value,
+                rating: parseFloat(document.getElementById('bookRating').value),
+                image_url: document.getElementById('bookImage').value,
+                description: document.getElementById('bookDescription').value,
+                featured: document.getElementById('bookFeatured').checked
+            };
+
+            try {
+                const url = id ? `/api/admin/books/${id}` : '/api/admin/books';
+                const method = id ? 'PUT' : 'POST';
+                const res = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if (!res.ok) throw new Error('Failed');
+                showToast(id ? 'Book updated!' : 'Book created!');
+                closeBookModal();
+                loadBooks();
+            } catch (err) {
+                showToast('Failed to save book', 'error');
+            }
+        }
+
+        async function deleteBook(id) {
+            if (!confirm('Are you sure you want to delete this book?')) return;
+            try {
+                const res = await fetch(`/api/admin/books/${id}`, { method: 'DELETE' });
+                if (!res.ok) throw new Error('Failed');
+                showToast('Book deleted');
+                loadBooks();
+            } catch (err) {
+                showToast('Failed to delete', 'error');
+            }
+        }
+
+        // Orders
+        async function loadOrders() {
+            try {
+                const res = await fetch('/api/admin/orders');
+                currentOrders = await res.json();
+                renderOrdersTable();
+            } catch (err) {
+                showToast('Failed to load orders', 'error');
+            }
+        }
+
+        function renderOrdersTable() {
+            const tbody = document.getElementById('ordersTableBody');
+            if (currentOrders.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><i class="fas fa-box-open"></i><p>No orders found</p></td></tr>';
+                return;
+            }
+            tbody.innerHTML = currentOrders.map(o => `
+                <tr>
+                    <td>#${o.id}</td>
+                    <td>${o.customer_name || 'Guest'}</td>
+                    <td>${o.items.length} item${o.items.length !== 1 ? 's' : ''}</td>
+                    <td>$${o.total_amount.toFixed(2)}</td>
+                    <td><span class="badge badge-stock">${o.status}</span></td>
+                    <td>${new Date(o.created_at).toLocaleDateString()}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Close modal on overlay click
+        document.getElementById('bookModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) closeBookModal();
+        });
+
+        // Init
+        loadDashboard();
+    </script>
+</body>
+</html>

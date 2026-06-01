@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter One - Premium Bookshop</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='book.png') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Navigation -->
+    <nav id="navbar">
+        <a href="#" class="logo">
+            <i class="fas fa-book-open"></i>
+            Chapter One
+        </a>
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#books">Books</a></li>
+            <li><a href="#features">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+        <div class="nav-icons">
+            <a href="/admin" class="nav-icon-link" title="Admin Panel">
+                <i class="fas fa-cog"></i>
+            </a>
+            <button class="cart-btn" onclick="app.toggleCart()">
+                <i class="fas fa-shopping-bag"></i>
+                <span class="cart-count" id="cartCount">0</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1>Discover Your Next Great Read</h1>
+            <p>Curated collection of timeless classics and contemporary masterpieces. Immerse yourself in stories that inspire, educate, and transform.</p>
+            <a href="#books" class="btn" onclick="app.scrollToBooks(); return false;">
+                Explore Collection
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+        <div class="hero-image"></div>
+    </section>
+
+    <!-- Books Section -->
+    <section class="section" id="books">
+        <div class="section-header">
+            <h2>Featured Collection</h2>
+            <p>Handpicked books for every reader</p>
+        </div>
+
+        <div class="filters">
+            <button class="filter-btn active" data-category="all" onclick="app.filterBooks('all')">All Books</button>
+            <button class="filter-btn" data-category="fiction" onclick="app.filterBooks('fiction')">Fiction</button>
+            <button class="filter-btn" data-category="non-fiction" onclick="app.filterBooks('non-fiction')">Non-Fiction</button>
+            <button class="filter-btn" data-category="classic" onclick="app.filterBooks('classic')">Classics</button>
+            <button class="filter-btn" data-category="design" onclick="app.filterBooks('design')">Design</button>
+        </div>
+
+        <div class="books-grid" id="booksGrid">
+            <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"></div><div class="skeleton-text short"></div></div>
+            <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"></div><div class="skeleton-text short"></div></div>
+            <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"></div><div class="skeleton-text short"></div></div>
+            <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"></div><div class="skeleton-text short"></div></div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features" id="features">
+        <div class="section-header">
+            <h2>Why Choose Us</h2>
+            <p>The Chapter One experience</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature">
+                <div class="feature-icon">
+                    <i class="fas fa-truck"></i>
+                </div>
+                <h3>Free Shipping</h3>
+                <p>On all orders over $35. Delivered to your doorstep with care.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3>Secure Payment</h3>
+                <p>256-bit SSL encryption. Your data is always protected.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">
+                    <i class="fas fa-undo"></i>
+                </div>
+                <h3>Easy Returns</h3>
+                <p>30-day return policy. Not satisfied? We'll make it right.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">
+                    <i class="fas fa-headset"></i>
+                </div>
+                <h3>24/7 Support</h3>
+                <p>Our book experts are here to help you find your perfect read.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Chapter One</h3>
+                <p style="color: rgba(255,255,255,0.8); line-height: 1.6;">Your premier destination for literary discoveries. We believe in the transformative power of books.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#">Bestsellers</a></li>
+                    <li><a href="#">New Arrivals</a></li>
+                    <li><a href="#">Gift Cards</a></li>
+                    <li><a href="#">Collections</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Support</h3>
+                <ul>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Shipping Info</a></li>
+                    <li><a href="#">Returns</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Connect</h3>
+                <ul>
+                    <li><a href="#"><i class="fab fa-instagram"></i> Instagram</a></li>
+                    <li><a href="#"><i class="fab fa-twitter"></i> Twitter</a></li>
+                    <li><a href="#"><i class="fab fa-facebook"></i> Facebook</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p> Chapter One Bookshop. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-overlay" id="cartOverlay" onclick="app.toggleCart()"></div>
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h2>Your Cart</h2>
+            <button class="close-cart" onclick="app.toggleCart()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <div class="empty-cart">
+                <i class="fas fa-shopping-bag"></i>
+                <p>Your cart is empty</p>
+            </div>
+        </div>
+        <div class="cart-footer" id="cartFooter" style="display:none;">
+            <div class="cart-total">
+                <span>Total</span>
+                <span id="cartTotal">$0.00</span>
+            </div>
+            <button class="checkout-btn" onclick="app.openPayment()">
+                Proceed to Checkout
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div class="payment-modal" id="paymentModal">
+        <div class="payment-container">
+            <button class="close-payment" onclick="app.closePayment()">
+                <i class="fas fa-times"></i>
+            </button>
+
+            <div id="paymentForm">
+                <div class="payment-header">
+                    <h2>Secure Payment</h2>
+                    <p style="color: var(--text-light);">Complete your purchase safely</p>
+                </div>
+
+                <!-- Visual Credit Card -->
+                <div class="credit-card" id="creditCard">
+                    <div class="card-logo" id="cardLogo">
+                        <i class="fab fa-cc-visa"></i>
+                    </div>
+                    <div class="card-chip"></div>
+                    <div class="card-number" id="displayNumber">#### #### #### ####</div>
+                    <div class="card-details">
+                        <div>
+                            <div class="card-label">Card Holder</div>
+                            <div class="card-holder" id="displayHolder">YOUR NAME</div>
+                        </div>
+                        <div>
+                            <div class="card-label">Expires</div>
+                            <div class="card-expiry" id="displayExpiry">MM/YY</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card Type Selector -->
+                <div class="card-type-selector">
+                    <div class="card-type active" onclick="app.selectCardType('visa', this)">
+                        <i class="fab fa-cc-visa" style="color: #1A1F71;"></i>
+                        <span>Visa</span>
+                    </div>
+                    <div class="card-type" onclick="app.selectCardType('mastercard', this)">
+                        <i class="fab fa-cc-mastercard" style="color: #EB001B;"></i>
+                        <span>Mastercard</span>
+                    </div>
+                    <div class="card-type" onclick="app.selectCardType('amex', this)">
+                        <i class="fab fa-cc-amex" style="color: #006FCF;"></i>
+                        <span>Amex</span>
+                    </div>
+                </div>
+
+                <form onsubmit="app.processPayment(event)">
+                    <div class="form-group">
+                        <label>Card Number</label>
+                        <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" oninput="app.formatCardNumber(this)" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Card Holder Name</label>
+                        <input type="text" id="cardHolder" placeholder="John Doe" oninput="app.updateCardDisplay()" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Expiry Date</label>
+                            <input type="text" id="expiryDate" placeholder="MM/YY" maxlength="5" oninput="app.formatExpiry(this)" required>
+                        </div>
+                        <div class="form-group">
+                            <label>CVV</label>
+                            <input type="password" id="cvv" placeholder="123" maxlength="4" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="pay-btn">
+                        <i class="fas fa-lock"></i>
+                        Pay <span id="payAmount">$0.00</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Success Message -->
+            <div class="success-message" id="successMessage">
+                <div class="success-icon">
+                    <i class="fas fa-check"></i>
+                </div>
+                <h2 style="color: var(--primary); margin-bottom: 0.5rem;">Payment Successful!</h2>
+                <p style="color: var(--text-light); margin-bottom: 1.5rem;">Thank you for your purchase. Your books will be shipped shortly.</p>
+                <button class="btn" onclick="app.closePayment(); app.clearCart();" style="margin: 0 auto;">
+                    Continue Shopping
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
